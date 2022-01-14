@@ -10,7 +10,7 @@ require("./db/mongo")()
 // connect to Mysql
 require("./db/mysql")();
 //mongo
-const typeDefs = require("./schema");
+const typeDefs = require("./typeDefs");
 const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
 const { books } = require("./db");
