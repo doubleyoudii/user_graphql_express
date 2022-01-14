@@ -1,6 +1,8 @@
-const {books} = require("../db");
+const {books} = require("../staticDB");
 const Query = {
-    books: () => books,
+    books: (parent, args, ctx) => {
+        console.log(ctx);
+    },
     
 }
 

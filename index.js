@@ -6,14 +6,14 @@ require("dotenv").config();
 
 //connect to Mongo
 require("./db/mongo")()
-
 // connect to Mysql
 require("./db/mysql")();
+
 //mongo
 const typeDefs = require("./typeDefs");
 const Query = require("./resolvers/Query");
 const Mutation = require("./resolvers/Mutation");
-const { books } = require("./db");
+const { books } = require("./staticDB");
 
 const resolvers = {
   Query,
@@ -24,24 +24,37 @@ const context = {
   books,
 };
 
-async function startApolloServer(typeDefs, resolvers) {
+async function startApolloServer() {
   // Required logic for integrating with Express
   const app = express();
   const httpServer = http.createServer(app);
 
-  // Same ApolloServer initialization as before, plus the drain plugin.
-  const server = new ApolloServer({
+  const mongoServer = new ApolloServer({
     typeDefs,
     resolvers,
     context,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer, context })],
   });
 
-  // More required logic for integrating with Express
-  await server.start();
-  server.applyMiddleware({
+  const mySQLServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer, context })],
+  });
+
+  //MONGO GRAPHQL
+  await mongoServer.start();
+  mongoServer.applyMiddleware({
     app,
-    path: "/graphql",
+    path: "/graphql-mongo",
+  });
+
+  //MONGO GRAPHQL
+  await mySQLServer.start();
+  mySQLServer.applyMiddleware({
+    app,
+    path: "/graphql-mysql",
   });
 
   app.use((req, res) => {
@@ -51,9 +64,9 @@ async function startApolloServer(typeDefs, resolvers) {
   // Modified server startup
   httpServer.listen(4000, () => {
     console.log(
-      `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
+      `🚀 Server ready at http://localhost:4000${mongoServer.graphqlPath}`
     );
   });
 }
 
-startApolloServer(typeDefs, resolvers);
+startApolloServer();
