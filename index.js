@@ -5,14 +5,14 @@ const http = require("http");
 require("dotenv").config();
 
 //connect to Mongo
-require("./db/mongo")()
+require("./db/mongo")();
 // connect to Mysql
 require("./db/mysql")();
 
 //mongo
 const typeDefs = require("./typeDefs");
-const Query = require("./resolvers/Query");
-const Mutation = require("./resolvers/Mutation");
+const Query = require("./resolvers/mongo/Query");
+const Mutation = require("./resolvers/mongo/Mutation");
 const { books } = require("./staticDB");
 
 const resolvers = {
@@ -33,14 +33,14 @@ async function startApolloServer() {
     typeDefs,
     resolvers,
     context,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer, context })],
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
 
   const mySQLServer = new ApolloServer({
     typeDefs,
     resolvers,
     context,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer, context })],
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
 
   //MONGO GRAPHQL
