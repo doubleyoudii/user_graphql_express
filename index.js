@@ -4,41 +4,40 @@ const express = require("express");
 const http = require("http");
 require("dotenv").config();
 
-//connect to Mongo
-require("./db/mongo")();
-// connect to Mysql
-require("./db/mysql")();
-
-//mongo
-const typeDefs = require("./typeDefs");
-const Query = require("./resolvers/mongo/Query");
-const Mutation = require("./resolvers/mongo/Mutation");
-const { books } = require("./staticDB");
-const User = require("./models/mongo/user.model");
-
-// mysql
-const sqlQuery = require("./resolvers/mysql/Query.sql");
-const sqlMutation = require("./resolvers/mysql/Mutation.sql");
-const UserSql = require("./models/mysql/user");
-
-
-const resolvers = {
-  Query,
-  Mutation,
-};
-
-const sqlResolvers = {
-  Query: sqlQuery,
-  Mutation: sqlMutation,
-};
-
-const context = {
-  books,
-  User,
-  UserSql
-};
-
 async function startApolloServer() {
+  //connect to Mongo
+  await require("./db/mongo")();
+  // connect to Mysql
+  const mysqlConn = await require("./db/mysql")();
+
+  //mongo
+  const typeDefs = require("./typeDefs");
+  const Query = require("./resolvers/mongo/Query");
+  const Mutation = require("./resolvers/mongo/Mutation");
+  const { books } = require("./staticDB");
+  const User = require("./models/mongo/user.model");
+
+  // mysql
+  const sqlQuery = require("./resolvers/mysql/Query.sql");
+  const sqlMutation = require("./resolvers/mysql/Mutation.sql");
+  const UserSql = await require("./models/mysql/user")(mysqlConn);
+
+  const resolvers = {
+    Query,
+    Mutation,
+  };
+
+  const sqlResolvers = {
+    Query: sqlQuery,
+    Mutation: sqlMutation,
+  };
+
+  const context = {
+    books,
+    User,
+    UserSql,
+  };
+
   // Required logic for integrating with Express
   const app = express();
   const httpServer = http.createServer(app);
@@ -81,7 +80,9 @@ async function startApolloServer() {
       `🚀 Server ready at http://localhost:4000${mongoServer.graphqlPath}`
     );
 
-    console.log(`🚀 Server ready at http://localhost:4000${mySQLServer.graphqlPath}`)
+    console.log(
+      `🚀 Server ready at http://localhost:4000${mySQLServer.graphqlPath}`
+    );
   });
 }
 
