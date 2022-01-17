@@ -1,11 +1,9 @@
 const Mutation = {
-  addBook: (parent, { image, title }, ctx) => {
-    let newAnimal = {
-      image,
-      title,
-    };
+  signup: async(parent, { user }, {UserSql}) => {
+    const userCreate = await UserSql.create(user);
+    await userCreate.save()
 
-    return newAnimal;
+    return userCreate;
   },
 };
 

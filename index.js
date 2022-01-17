@@ -16,14 +16,26 @@ const Mutation = require("./resolvers/mongo/Mutation");
 const { books } = require("./staticDB");
 const User = require("./models/mongo/user.model");
 
+// mysql
+const sqlQuery = require("./resolvers/mysql/Query.sql");
+const sqlMutation = require("./resolvers/mysql/Mutation.sql");
+const UserSql = require("./models/mysql/user");
+
+
 const resolvers = {
   Query,
   Mutation,
 };
 
+const sqlResolvers = {
+  Query: sqlQuery,
+  Mutation: sqlMutation,
+};
+
 const context = {
   books,
-  User
+  User,
+  UserSql
 };
 
 async function startApolloServer() {
@@ -40,7 +52,7 @@ async function startApolloServer() {
 
   const mySQLServer = new ApolloServer({
     typeDefs,
-    resolvers,
+    resolvers: sqlResolvers,
     context,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
@@ -68,6 +80,8 @@ async function startApolloServer() {
     console.log(
       `🚀 Server ready at http://localhost:4000${mongoServer.graphqlPath}`
     );
+
+    console.log(`🚀 Server ready at http://localhost:4000${mySQLServer.graphqlPath}`)
   });
 }
 

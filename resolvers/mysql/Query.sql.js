@@ -1,7 +1,8 @@
 // const {books} = require("../staticDB");
 const Query = {
-    books: (parent, args, ctx) => {
-        console.log(ctx);
+    users: async (parent, args, {UserSql, books}) => {
+        const user = await UserSql.findAll();
+        return user;
     },
     
 }
