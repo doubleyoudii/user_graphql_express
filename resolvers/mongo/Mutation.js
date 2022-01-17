@@ -7,6 +7,13 @@ const Mutation = {
 
     return newAnimal;
   },
+
+  signup: async (parent, {user}, {User}) => {
+    const userCreate = await User.create(user);
+    await userCreate.save()
+
+    return userCreate;
+  }
 };
 
 module.exports = Mutation;

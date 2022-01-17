@@ -14,6 +14,7 @@ const typeDefs = require("./typeDefs");
 const Query = require("./resolvers/mongo/Query");
 const Mutation = require("./resolvers/mongo/Mutation");
 const { books } = require("./staticDB");
+const User = require("./models/mongo/user.model");
 
 const resolvers = {
   Query,
@@ -22,6 +23,7 @@ const resolvers = {
 
 const context = {
   books,
+  User
 };
 
 async function startApolloServer() {
