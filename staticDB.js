@@ -1,3 +1,4 @@
+// Sample static DB for learning purposes
 const books = [
   {
     title: "The Awakening",
